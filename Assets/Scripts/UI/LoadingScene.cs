@@ -6,8 +6,8 @@ using UnityEngine.SceneManagement;
 
 public class LoadingScene : MonoBehaviour
 {
-    [SerializeField] private Text percent;
-    [SerializeField] private Image progressbar;
+    [SerializeField] private Text percent = null;
+    [SerializeField] private Image progressbar = null;
     private float progress;
     private AsyncOperation async;
     private float timer;

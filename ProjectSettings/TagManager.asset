@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Creep
   - Hero
+  - Obstacle
   layers:
   - Default
   - TransparentFX

@@ -7,16 +7,13 @@ using UnityEngine.SceneManagement;
 
 public class SelectScene : MonoBehaviour
 {
-    int heroSelectIndex = 0;
-    [SerializeField]private Image[] cards;
-    [SerializeField] private Image selectArrow;
-    [SerializeField] private Text heroname;
+    [SerializeField] private Image selectArrow = null;
+    [SerializeField] private Text heroname = null;
 
 
     void Start()
     {
         TypeInGame.heroname = "FallenAngel";
-        heroSelectIndex = 0;
         heroname.text = TypeInGame.heroname;
     }
 

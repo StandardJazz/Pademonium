@@ -31,7 +31,7 @@ abstract public class AHeroes : MonoBehaviour
     //MeleeAttack
     protected bool isAttackable;  //사정거리에 들어왔을 경우 (코루틴 안에서)
     protected bool castAttack;    //A키 누른 후 마우스(0)을 누르면 공격하게끔
-    protected bool isAutoAttack = false;   //위의 해당하는 명령을 하면 true로 바꿔줌 2개의 코루틴 실행 (Perception find,attack)
+    protected bool isAutoAttack = false;  
     public float attackSpeed;   //하나의 공격 애니메이션이 시작하고 해당 시간 후에 다시 공격 시작 
     protected float attackTimer;
     protected bool attackReady;
@@ -43,7 +43,7 @@ abstract public class AHeroes : MonoBehaviour
     protected float perceptionRange;
     protected float attackRange;
     private int layerMask = 1;
-    private bool isCanSee = false;
+    //private bool isCanSee = false;
     private NavMeshPath path;
 
     //Skill
@@ -119,7 +119,7 @@ abstract public class AHeroes : MonoBehaviour
         deathTimer = 0.0f;
         targetPos = spawnLocation;
 
-        player_navMesh.speed = 2.0f;
+        player_navMesh.speed = 3.0f;
         transform.localScale = new Vector3(1, 1, 1);
 
         player_anim.SetBool("StartDeadAnim", false);
@@ -159,13 +159,18 @@ abstract public class AHeroes : MonoBehaviour
         isDead = false;
         attackTimer = attackSpeed;
         applyDmgOnce = false;
+    }
 
-        print("heroStart");
+    void DyingTest()
+    {
+        currentHP = -1.0f;
     }
 
     protected void HeroesUpdate()
     {
-        isDead = currentHP < 0.0f;
+        if (Input.GetKeyDown(KeyCode.Space)) DyingTest();
+
+        isDead = currentHP <= 0.0f;
         player_anim.SetBool("IsDead", isDead);
 
         if (attackTimer < attackSpeed)

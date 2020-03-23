@@ -55,7 +55,7 @@ public class HasSkillHit : MonoBehaviour
 
     private void OnTriggerEnter(Collider col)
     {
-        if (col.transform.CompareTag("Enemy") || col.transform.CompareTag("Creep"))
+        if (col.transform.CompareTag("Creep"))
         {
             bool bCheck = false;
             int currentID = col.gameObject.GetInstanceID();
