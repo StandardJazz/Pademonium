@@ -51,8 +51,7 @@ abstract public class AHeroes : MonoBehaviour
     [SerializeField] protected Collider W_Skill_Scope = null;
     [SerializeField] protected Collider E_Skill_Scope = null;
     [SerializeField] protected Collider R_Skill_Scope = null;
-
-    private Projector Spell_Indicator = new Projector();
+   
     
     private const int SKILL_NUM = 4;
     protected bool[] canUseSkills = new bool[SKILL_NUM];
@@ -62,8 +61,11 @@ abstract public class AHeroes : MonoBehaviour
     protected float[] MAX_SK_CDS = new float[SKILL_NUM];
     protected float[] ct_ratio = new float[SKILL_NUM];
 
-    protected bool[] currentCastingSkills = new bool[SKILL_NUM];
-    protected bool[] noCastSkills = new bool[SKILL_NUM];
+    private bool indicatingSkill = false;
+    protected bool[] currentIndicatingSkills = new bool[SKILL_NUM];
+    protected bool[] immediateSkills = new bool[SKILL_NUM];
+    protected int indicatorIndex = -1;
+
     protected delegate bool SkillFunc();
     protected SkillFunc[] InvokeSkills = new SkillFunc[4];
 
@@ -114,12 +116,7 @@ abstract public class AHeroes : MonoBehaviour
     {
         //this.GetComponentsInChildren<>
         spawnLocation = new Vector3(5, 1, 5);
-
-
-        //if (projectors.Length != SKILL_NUM) print("fail hero projector");
-
-        Spell_Indicator = this.gameObject.GetComponentInChildren<Projector>();
-       
+        
     }
 
     void Revive()
@@ -180,8 +177,6 @@ abstract public class AHeroes : MonoBehaviour
     protected void HeroesUpdate()
     {
         if (Input.GetKeyDown(KeyCode.Space)) DyingTest();
-        if (Input.GetKeyDown(KeyCode.UpArrow)) Spell_Indicator.enabled = !Spell_Indicator.enabled;
-        if (Input.GetKeyDown(KeyCode.RightArrow)) Spell_Indicator.material.SetInt("_TextureIndex", Spell_Indicator.material.GetInt("_TextureIndex") != 0 ? 0: 1 );
 
 
          isDead = currentHP <= 0.0f;
@@ -210,7 +205,7 @@ abstract public class AHeroes : MonoBehaviour
             if(!revive) Move();
         
 
-        //Skill();
+        Skill();
     }
 
     //자식 클래스에서 호출
@@ -234,12 +229,13 @@ abstract public class AHeroes : MonoBehaviour
 
         for (int i = 0; i < 4; i++)
         {
-            currentCastingSkills[i] = false;
+            currentIndicatingSkills[i] = false;
             hasActualHit[i] = false;
+
             if (skillHitsScripts[i]) skillHitsScripts[i].SetSkillDmg(skillDmgs[i]);
             sk_manas[i] = mana_costs[i];
             MAX_SK_CDS[i] = coolTime_costs[i];
-            noCastSkills[i] = immediatelySkills[i];
+            immediateSkills[i] = immediatelySkills[i];
         }
 
 
@@ -295,6 +291,7 @@ abstract public class AHeroes : MonoBehaviour
 
         if (Input.GetMouseButtonDown(1))
         {
+            indicatingSkill = false;
             isAutoAttack = false;
             castAttack = false;
             targetPos = playerCam.GetComponent<FollowCam>().GetMousePoint();
@@ -323,7 +320,7 @@ abstract public class AHeroes : MonoBehaviour
             player_anim.SetFloat("Speed", 0.0f);
         }
     }
-    private void DetKey()
+    private void DetIndicator()
     {
         int skillIndex = -1;
 
@@ -344,41 +341,57 @@ abstract public class AHeroes : MonoBehaviour
             skillIndex = 3;
         }
 
-        if (skillIndex < 0) return;
+        if (skillIndex < 0)return;
         else
         {
-            for(int i = 0; i <SKILL_NUM; i++)
-            {
-                if (skillIndex == i) currentCastingSkills[i] = !currentCastingSkills[i];
-                currentCastingSkills[i] = false;
-            }
+            indicatorIndex = skillIndex;
         }
     }
 
     private void Skill()
     {
-        for( int i = 0; i <SKILL_NUM;i++)
+        //스킬 Indicate 아니면,
+        if (!indicatingSkill)
+        {
+            for (int i = 0; i < SKILL_NUM; i++)
+                currentIndicatingSkills[i] = false;
+        }
+
+        for ( int i = 0; i <SKILL_NUM;i++)
         {
             canManaSkills[i] = currentMP > sk_manas[i];
             ct_ratio[i] = sk_cds[i] / MAX_SK_CDS[i];
             canUseSkills[i] = (ct_ratio[i] >= 1.0f);
         }
 
-        //스킬 쿨탐됐으면 들어간다~??
-        for (int i = 0; i < SKILL_NUM; i++)
-            if (canUseSkills[i] && canManaSkills[i])
-            {
-                if (!isDead 
-                    && !isSpawning 
-                    && (currentCastingSkills[i] || noCastSkills[i])
-                    )
-                {
-                    InvokeSkills[i]();
-                    sk_cds[i] = 0.0f;
-                }
+        
 
-            }
-            else sk_cds[i] += Time.deltaTime;
+        if(!isDead && !isSpawning)
+        {
+            DetIndicator();
+            //스킬 쿨탐됐으면 들어간다~??
+            for (int i = 0; i < SKILL_NUM; i++)
+                if (canUseSkills[i] && canManaSkills[i])
+                {
+
+                    if(i == indicatorIndex)
+                    {
+                        currentIndicatingSkills[i] = true;
+
+                        bool bSkilled = false;
+                        if (immediateSkills[i]) bSkilled = InvokeSkills[i]();
+                        else if (Input.GetMouseButtonDown(0)) bSkilled = InvokeSkills[i]();
+
+                        if (bSkilled)
+                        {
+                            indicatorIndex = -1;
+                            sk_cds[i] = 0.0f;
+                        }
+                    }
+                }
+                else sk_cds[i] += Time.deltaTime;
+        }
+
 
         //실질적인 스킬 충돌 체크
         if (skillHitsScripts[0] != null) skillHitsScripts[0].SetActualHitTime(player_anim.GetBool("QSkill"));
@@ -531,5 +544,15 @@ abstract public class AHeroes : MonoBehaviour
     public bool IsDead()
     {
         return isDead;
+    }
+
+    public bool[] GetCurrentIndicatingSkills()
+    {
+        return currentIndicatingSkills;
+    }
+
+    public int GetCurrentIndicatorIndex()
+    {
+        return indicatorIndex;
     }
 }

@@ -1,7 +1,7 @@
 // Upgrade NOTE: replaced '_Projector' with 'unity_Projector'
 // Upgrade NOTE: replaced '_ProjectorClip' with 'unity_ProjectorClip'
 
-Shader "Projector/Light" {
+Shader "Projector/Spell_Indicator" {
 	Properties {
 		_Color ("Main Color", Color) = (1,1,1,1)
 		_ProjectionTexture_Q ("Q Spell Indicator", 2D) = "" {}
@@ -49,7 +49,8 @@ Shader "Projector/Light" {
 			
 			fixed4 frag (v2f i) : SV_Target
 			{
-				fixed4 texS;
+				fixed4 texS = fixed4(0,0,0,1);
+
 				switch (_TextureIndex)
 				{
 				case 0:

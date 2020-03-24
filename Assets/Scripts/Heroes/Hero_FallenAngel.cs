@@ -16,7 +16,7 @@ public class Hero_FallenAngel : AHeroes
         float[] mana_costs = new float[4] { 30.0f, 70.0f, 100.0f, 120.0f };
         float[] coolTime_costs = new float[4] { 3.5f, 9.0f, 14.0f, 96.0f };
         float[] skillDmgs = new float[4] { 120.0f, 30.0f, 250.0f, 0.0f };
-        bool[] noCastSkills = new bool[4] { false, true, false, true};
+        bool[] noCastSkills = new bool[4] { false, true, false, true };
 
         HeroesStart();
 
@@ -46,6 +46,7 @@ public class Hero_FallenAngel : AHeroes
     //서서히 증가하다가 감소하는 
     IEnumerator RSkill()
     {
+        indicatorIndex = -1;
         while (true)
         {
             if (isDead)
@@ -79,6 +80,7 @@ public class Hero_FallenAngel : AHeroes
                 {
                     player_navMesh.speed = 2.0f;
                     transform.localScale = new Vector3(1, 1, 1);
+                    indicatorIndex = -1;
                     sk_cds[3] = 0.0f;
                     break;
                 }
@@ -103,66 +105,48 @@ public class Hero_FallenAngel : AHeroes
 
     protected override bool Use_Q_Skill()
     {
-        if (Input.GetKeyDown(KeyCode.Q))
-        {
-            if (player_anim.GetBool("isCasting")) return false;
-            player_anim.SetBool("isCasting", true);
-            player_anim.SetTrigger("Q");
+        if (player_anim.GetBool("isCasting")) return false;
 
-            currentMP -= sk_manas[0];
+        player_anim.SetBool("isCasting", true);
+        player_anim.SetTrigger("Q");
 
-            return true;
-        }
-        return false;
+        currentMP -= sk_manas[0];
+
+        return true;
     }
 
     protected override bool Use_W_Skill()
     {
-        if (Input.GetKeyDown(KeyCode.W))
-        {
-            if (player_anim.GetBool("isCasting")) return false;
+        if (player_anim.GetBool("isCasting")) return false;
 
-            player_anim.SetBool("isCasting", true);
-            player_anim.SetTrigger("W");
+        player_anim.SetBool("isCasting", true);
+        player_anim.SetTrigger("W");
 
-            currentMP -= sk_manas[1];
-            return true;
-        }
-
-        return false;
+        currentMP -= sk_manas[1];
+        return true;
     }
 
     protected override bool Use_E_Skill()
     {
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-            if (player_anim.GetBool("isCasting")) return false;
+        if (player_anim.GetBool("isCasting")) return false;
 
-            player_anim.SetBool("isCasting", true);
-            player_anim.SetTrigger("E");
+        player_anim.SetBool("isCasting", true);
+        player_anim.SetTrigger("E");
 
-            currentMP -= sk_manas[2];
-            return true;
-        }
-
-        return false;
+        currentMP -= sk_manas[2];
+        return true;
     }
 
     protected override bool Use_R_Skill()
     {
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            if (player_anim.GetBool("isCasting")) return false;
+        if (player_anim.GetBool("isCasting")) return false;
 
-            player_anim.SetBool("isCasting", true);
-            player_anim.SetTrigger("R");
+        player_anim.SetBool("isCasting", true);
+        player_anim.SetTrigger("R");
 
-            currentMP -= sk_manas[3];
-            rSkillDuration = true;
-            StartCoroutine(RSkill());
-            return false;
-        }
-
+        currentMP -= sk_manas[3];
+        rSkillDuration = true;
+        StartCoroutine(RSkill());
         return false;
     }
 
