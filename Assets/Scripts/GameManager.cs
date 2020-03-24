@@ -15,7 +15,8 @@ public class GameManager : MonoBehaviour
     
     void Awake()
     {
-        GameObject temp = Instantiate( Resources.Load(TypeInGame.heroname) as GameObject, new Vector3(5.0f,1.0f,5.0f),Quaternion.identity);
+        //GameObject temp = Instantiate( Resources.Load(TypeInGame.heroname) as GameObject, new Vector3(5.0f,1.0f,5.0f),Quaternion.identity);
+        GameObject temp = Instantiate( Resources.Load("FallenAngel") as GameObject, new Vector3(5.0f,1.0f,5.0f),Quaternion.identity);
         player = temp;
         if (player == null) SceneManager.LoadScene("SelectScene");
     }
