@@ -260,7 +260,7 @@ abstract public class AHeroes : MonoBehaviour
     {
         Regeneration = Regeneration_CO();
         MeleeAttack = MeleeAttack_CO();
-        Perception = NewPerception_CO();
+        Perception = Perception_CO();
 
         StartCoroutine(Regeneration);
         StartCoroutine(Perception);
@@ -351,7 +351,7 @@ abstract public class AHeroes : MonoBehaviour
     }
 
     //항상 켜놓고, 죽을 때만 끄기. revive시 다시 켜야해
-    protected IEnumerator NewPerception_CO()
+    protected IEnumerator Perception_CO()
     {
         while(true)
         {
@@ -419,7 +419,7 @@ abstract public class AHeroes : MonoBehaviour
                 objToAttack = null;
             }
 
-            if (attackReady && objToAttack != null)
+            if (isAttackable && attackReady && objToAttack != null)
             {
                 attackTimer = 0.0f;
                 int rd_att = (int)Random.Range(0.0f, 2.0f);
