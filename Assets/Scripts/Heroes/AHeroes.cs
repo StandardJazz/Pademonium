@@ -52,6 +52,8 @@ abstract public class AHeroes : MonoBehaviour
     [SerializeField] protected Collider E_Skill_Scope = null;
     [SerializeField] protected Collider R_Skill_Scope = null;
 
+    private Projector Spell_Indicator = new Projector();
+    
     private const int SKILL_NUM = 4;
     protected bool[] canUseSkills = new bool[SKILL_NUM];
     protected bool[] canManaSkills = new bool[SKILL_NUM];
@@ -59,6 +61,9 @@ abstract public class AHeroes : MonoBehaviour
     protected float[] sk_manas = new float[SKILL_NUM];
     protected float[] MAX_SK_CDS = new float[SKILL_NUM];
     protected float[] ct_ratio = new float[SKILL_NUM];
+
+    protected bool[] currentCastingSkills = new bool[SKILL_NUM];
+    protected bool[] noCastSkills = new bool[SKILL_NUM];
     protected delegate bool SkillFunc();
     protected SkillFunc[] InvokeSkills = new SkillFunc[4];
 
@@ -109,6 +114,12 @@ abstract public class AHeroes : MonoBehaviour
     {
         //this.GetComponentsInChildren<>
         spawnLocation = new Vector3(5, 1, 5);
+
+
+        //if (projectors.Length != SKILL_NUM) print("fail hero projector");
+
+        Spell_Indicator = this.gameObject.GetComponentInChildren<Projector>();
+       
     }
 
     void Revive()
@@ -169,8 +180,11 @@ abstract public class AHeroes : MonoBehaviour
     protected void HeroesUpdate()
     {
         if (Input.GetKeyDown(KeyCode.Space)) DyingTest();
+        if (Input.GetKeyDown(KeyCode.UpArrow)) Spell_Indicator.enabled = !Spell_Indicator.enabled;
+        if (Input.GetKeyDown(KeyCode.RightArrow)) Spell_Indicator.material.SetInt("_TextureIndex", Spell_Indicator.material.GetInt("_TextureIndex") != 0 ? 0: 1 );
 
-        isDead = currentHP <= 0.0f;
+
+         isDead = currentHP <= 0.0f;
         player_anim.SetBool("IsDead", isDead);
 
         if (attackTimer < attackSpeed)
@@ -196,17 +210,17 @@ abstract public class AHeroes : MonoBehaviour
             if(!revive) Move();
         
 
-        Skill();
+        //Skill();
     }
 
     //자식 클래스에서 호출
-    protected bool SetSkill(float[] mana_costs, float[] coolTime_costs, float[] skillDmgs)
+    protected bool SetSkill(float[] mana_costs, float[] coolTime_costs, float[] skillDmgs, bool[] immediatelySkills)
     {
         if (mana_costs.Length != SKILL_NUM
             || coolTime_costs.Length != SKILL_NUM
             || skillDmgs.Length != SKILL_NUM
+            || immediatelySkills.Length != SKILL_NUM
           ) return false;
-
 
         InvokeSkills[0] = Use_Q_Skill;
         InvokeSkills[1] = Use_W_Skill;
@@ -220,10 +234,12 @@ abstract public class AHeroes : MonoBehaviour
 
         for (int i = 0; i < 4; i++)
         {
+            currentCastingSkills[i] = false;
             hasActualHit[i] = false;
             if (skillHitsScripts[i]) skillHitsScripts[i].SetSkillDmg(skillDmgs[i]);
             sk_manas[i] = mana_costs[i];
             MAX_SK_CDS[i] = coolTime_costs[i];
+            noCastSkills[i] = immediatelySkills[i];
         }
 
 
@@ -307,16 +323,43 @@ abstract public class AHeroes : MonoBehaviour
             player_anim.SetFloat("Speed", 0.0f);
         }
     }
+    private void DetKey()
+    {
+        int skillIndex = -1;
+
+        if (Input.GetKeyDown(KeyCode.Q))
+        {
+            skillIndex = 0;
+        }
+        if (Input.GetKeyDown(KeyCode.W))
+        {
+            skillIndex = 1;
+        }
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            skillIndex = 2;
+        }
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            skillIndex = 3;
+        }
+
+        if (skillIndex < 0) return;
+        else
+        {
+            for(int i = 0; i <SKILL_NUM; i++)
+            {
+                if (skillIndex == i) currentCastingSkills[i] = !currentCastingSkills[i];
+                currentCastingSkills[i] = false;
+            }
+        }
+    }
 
     private void Skill()
     {
-        //마나에 따른 스킬 사용 가능?
-        for (int i = 0; i < SKILL_NUM; i++)
-            canManaSkills[i] = currentMP > sk_manas[i];
-
-        //스킬 쿨탐 됏어?
-        for (int i = 0; i < SKILL_NUM; i++)
+        for( int i = 0; i <SKILL_NUM;i++)
         {
+            canManaSkills[i] = currentMP > sk_manas[i];
             ct_ratio[i] = sk_cds[i] / MAX_SK_CDS[i];
             canUseSkills[i] = (ct_ratio[i] >= 1.0f);
         }
@@ -325,7 +368,14 @@ abstract public class AHeroes : MonoBehaviour
         for (int i = 0; i < SKILL_NUM; i++)
             if (canUseSkills[i] && canManaSkills[i])
             {
-                if (!isDead && !isSpawning && InvokeSkills[i]()) sk_cds[i] = 0.0f;
+                if (!isDead 
+                    && !isSpawning 
+                    && (currentCastingSkills[i] || noCastSkills[i])
+                    )
+                {
+                    InvokeSkills[i]();
+                    sk_cds[i] = 0.0f;
+                }
 
             }
             else sk_cds[i] += Time.deltaTime;

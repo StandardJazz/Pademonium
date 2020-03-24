@@ -16,10 +16,11 @@ public class Hero_FallenAngel : AHeroes
         float[] mana_costs = new float[4] { 30.0f, 70.0f, 100.0f, 120.0f };
         float[] coolTime_costs = new float[4] { 3.5f, 9.0f, 14.0f, 96.0f };
         float[] skillDmgs = new float[4] { 120.0f, 30.0f, 250.0f, 0.0f };
+        bool[] noCastSkills = new bool[4] { false, true, false, true};
 
         HeroesStart();
 
-        SetSkill(mana_costs, coolTime_costs, skillDmgs);
+        SetSkill(mana_costs, coolTime_costs, skillDmgs, noCastSkills);
         //SetStats(840.0f, 5.0f, 310.0f, 3.0f, 56.0f, 0.5f, 2.5f);
         SetStats(840.0f, 5.0f, 310.0f, 3.0f, 200.0f, 2.0f, 2.5f);
         SetComponents();
