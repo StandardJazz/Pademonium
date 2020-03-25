@@ -10,15 +10,19 @@ public class GameManager : MonoBehaviour
     public CursorMode cursorMode = CursorMode.Auto;
     public Vector2 hotSpot = Vector2.zero;
     public static GameObject player = null;
+    public static GameObject spell_Indicator = null;
 
     private bool attackReady = false;
     
     void Awake()
     {
         //GameObject temp = Instantiate( Resources.Load(TypeInGame.heroname) as GameObject, new Vector3(5.0f,1.0f,5.0f),Quaternion.identity);
-        GameObject temp = Instantiate( Resources.Load("FallenAngel") as GameObject, new Vector3(5.0f,1.0f,5.0f),Quaternion.identity);
-        player = temp;
+        player = Instantiate( Resources.Load("FallenAngel") as GameObject, new Vector3(5.0f,1.0f,5.0f),Quaternion.identity);
+        spell_Indicator = Instantiate(Resources.Load("Hero_Spell_Indicator") as GameObject, new Vector3(5.0f, 5.5f, 5.0f), Quaternion.identity);
+
         if (player == null) SceneManager.LoadScene("SelectScene");
+        spell_Indicator.GetComponent<Spell_Indicator>().SetPlayer(player);
+        player.GetComponent<AHeroes>().SetSpellIndicator(spell_Indicator.GetComponent<Spell_Indicator>());
     }
 
 

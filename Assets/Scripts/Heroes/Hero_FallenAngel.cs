@@ -18,6 +18,22 @@ public class Hero_FallenAngel : AHeroes
         float[] skillDmgs = new float[4] { 120.0f, 30.0f, 250.0f, 0.0f };
         bool[] noCastSkills = new bool[4] { false, true, false, true };
 
+        SpellInfo[] spellInfos = new SpellInfo[4];
+
+        spellInfos[0].spellType = SpellType.FixedNonTarget;
+        spellInfos[0].bound = 3.0f;
+        spellInfos[0].proj_size = 2.0f;
+
+        spellInfos[1].spellType = SpellType.NONE;
+
+        spellInfos[2].spellType = SpellType.FreeNonTarget;
+        spellInfos[2].range = 15.0f;
+        spellInfos[2].bound = 2.5f;
+        spellInfos[0].proj_size = 2.0f;
+
+
+        spellInfos[3].spellType = SpellType.NONE;
+
         HeroesStart();
 
         SetSkill(mana_costs, coolTime_costs, skillDmgs, noCastSkills);
@@ -25,6 +41,7 @@ public class Hero_FallenAngel : AHeroes
         SetStats(840.0f, 5.0f, 310.0f, 3.0f, 200.0f, 2.0f, 2.5f);
         SetComponents();
         SetCoroutine();
+        SetSpellInfos(spellInfos);
     }
 
     protected override void Death_Child()
@@ -105,7 +122,8 @@ public class Hero_FallenAngel : AHeroes
 
     protected override bool Use_Q_Skill()
     {
-        if (player_anim.GetBool("isCasting")) return false;
+        this.transform.rotation = spell_indicator.GetSpellDirection();
+        player_navMesh.updateRotation = false;
 
         player_anim.SetBool("isCasting", true);
         player_anim.SetTrigger("Q");
@@ -117,8 +135,6 @@ public class Hero_FallenAngel : AHeroes
 
     protected override bool Use_W_Skill()
     {
-        if (player_anim.GetBool("isCasting")) return false;
-
         player_anim.SetBool("isCasting", true);
         player_anim.SetTrigger("W");
 
@@ -128,7 +144,8 @@ public class Hero_FallenAngel : AHeroes
 
     protected override bool Use_E_Skill()
     {
-        if (player_anim.GetBool("isCasting")) return false;
+        this.transform.rotation = spell_indicator.GetSpellDirection();
+        player_navMesh.updateRotation = false;
 
         player_anim.SetBool("isCasting", true);
         player_anim.SetTrigger("E");
@@ -139,8 +156,6 @@ public class Hero_FallenAngel : AHeroes
 
     protected override bool Use_R_Skill()
     {
-        if (player_anim.GetBool("isCasting")) return false;
-
         player_anim.SetBool("isCasting", true);
         player_anim.SetTrigger("R");
 

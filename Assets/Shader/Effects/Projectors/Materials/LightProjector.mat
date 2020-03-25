@@ -40,19 +40,19 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _ProjectionTexture_E:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: 26f330cc196629841a224df0eee2066c, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _ProjectionTexture_Q:
-        m_Texture: {fileID: 2800000, guid: f1512d62103f411498664890b140fb65, type: 3}
+        m_Texture: {fileID: 2800000, guid: a1f6f8bc5259c234c977fb9bb1ab9660, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _ProjectionTexture_R:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: 76dc7eb3c90f9694a8a541f9eb8fc0da, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _ProjectionTexture_W:
-        m_Texture: {fileID: 2800000, guid: bf9b7df9d540b0b4aa35b12f9c0db5af, type: 3}
+        m_Texture: {fileID: 2800000, guid: 76dc7eb3c90f9694a8a541f9eb8fc0da, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _ShadowTex:
@@ -60,7 +60,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - _TextureIndex: 1
+    - _TextureIndex: 0
     m_Colors:
     - BumpMapScale: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 0, g: 0.7454233, b: 1, a: 1}

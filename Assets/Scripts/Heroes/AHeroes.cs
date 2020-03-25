@@ -4,12 +4,13 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.AI;
 
-
+public enum SpellType
+{
+    NONE = 0, Target, FixedNonTarget, FreeNonTarget
+}
 
 abstract public class AHeroes : MonoBehaviour
 {
-    enum AttackType { Close, Long }
-
     //Camera
     [SerializeField] protected Camera playerCam = null;
 
@@ -31,7 +32,7 @@ abstract public class AHeroes : MonoBehaviour
     //MeleeAttack
     protected bool isAttackable;  //사정거리에 들어왔을 경우 (코루틴 안에서)
     protected bool castAttack;    //A키 누른 후 마우스(0)을 누르면 공격하게끔
-    protected bool isAutoAttack = false;  
+    protected bool isAutoAttack = false;
     public float attackSpeed;   //하나의 공격 애니메이션이 시작하고 해당 시간 후에 다시 공격 시작 
     protected float attackTimer;
     protected bool attackReady;
@@ -47,12 +48,22 @@ abstract public class AHeroes : MonoBehaviour
     private NavMeshPath path;
 
     //Skill
+    protected Spell_Indicator spell_indicator = null;
     [SerializeField] protected Collider Q_Skill_Scope = null;
     [SerializeField] protected Collider W_Skill_Scope = null;
     [SerializeField] protected Collider E_Skill_Scope = null;
     [SerializeField] protected Collider R_Skill_Scope = null;
-   
-    
+
+    public struct SpellInfo
+    {
+        public SpellType spellType;
+        public float range;
+        public float bound;
+        public float proj_size;
+    }
+
+    private SpellInfo[] spellInfos = new SpellInfo[SKILL_NUM];
+
     private const int SKILL_NUM = 4;
     protected bool[] canUseSkills = new bool[SKILL_NUM];
     protected bool[] canManaSkills = new bool[SKILL_NUM];
@@ -61,7 +72,6 @@ abstract public class AHeroes : MonoBehaviour
     protected float[] MAX_SK_CDS = new float[SKILL_NUM];
     protected float[] ct_ratio = new float[SKILL_NUM];
 
-    private bool indicatingSkill = false;
     protected bool[] currentIndicatingSkills = new bool[SKILL_NUM];
     protected bool[] immediateSkills = new bool[SKILL_NUM];
     protected int indicatorIndex = -1;
@@ -114,9 +124,8 @@ abstract public class AHeroes : MonoBehaviour
 
     void Awake()
     {
-        //this.GetComponentsInChildren<>
         spawnLocation = new Vector3(5, 1, 5);
-        
+
     }
 
     void Revive()
@@ -179,7 +188,7 @@ abstract public class AHeroes : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space)) DyingTest();
 
 
-         isDead = currentHP <= 0.0f;
+        isDead = currentHP <= 0.0f;
         player_anim.SetBool("IsDead", isDead);
 
         if (attackTimer < attackSpeed)
@@ -202,8 +211,8 @@ abstract public class AHeroes : MonoBehaviour
             Death();
         }
         else
-            if(!revive) Move();
-        
+            if (!revive) Move();
+
 
         Skill();
     }
@@ -244,6 +253,14 @@ abstract public class AHeroes : MonoBehaviour
                 sk_cds[i] = MAX_SK_CDS[j];
 
         return true;
+    }
+
+    protected void SetSpellInfos(SpellInfo[] spellInfos)
+    {
+        for (int i = 0; i < SKILL_NUM; i++)
+        {
+            this.spellInfos[i] = spellInfos[i];
+        }
     }
 
     protected void SetStats(float hp, float perhp, float mp, float permp, float dmg, float attackspeed, float attackrange)
@@ -291,7 +308,7 @@ abstract public class AHeroes : MonoBehaviour
 
         if (Input.GetMouseButtonDown(1))
         {
-            indicatingSkill = false;
+            EndSpell();
             isAutoAttack = false;
             castAttack = false;
             targetPos = playerCam.GetComponent<FollowCam>().GetMousePoint();
@@ -305,7 +322,7 @@ abstract public class AHeroes : MonoBehaviour
         isMove &= !isAttackable;
         isMove &= player_anim.GetBool("isMovable");
         player_anim.SetBool("isMove", isMove);
-    
+
         if (isMove)
         {
             player_navMesh.isStopped = false;
@@ -341,55 +358,60 @@ abstract public class AHeroes : MonoBehaviour
             skillIndex = 3;
         }
 
-        if (skillIndex < 0)return;
+        if (skillIndex < 0) return;
         else
         {
-            indicatorIndex = skillIndex;
+            if (indicatorIndex == skillIndex) indicatorIndex = -1;
+            else indicatorIndex = skillIndex;
         }
+    }
+
+    private void EndSpell()
+    {
+        for (int i = 0; i < SKILL_NUM; i++)
+            currentIndicatingSkills[i] = false;
+        indicatorIndex = -1;
     }
 
     private void Skill()
     {
-        //스킬 Indicate 아니면,
-        if (!indicatingSkill)
-        {
-            for (int i = 0; i < SKILL_NUM; i++)
-                currentIndicatingSkills[i] = false;
-        }
-
-        for ( int i = 0; i <SKILL_NUM;i++)
+        for (int i = 0; i < SKILL_NUM; i++)
         {
             canManaSkills[i] = currentMP > sk_manas[i];
             ct_ratio[i] = sk_cds[i] / MAX_SK_CDS[i];
             canUseSkills[i] = (ct_ratio[i] >= 1.0f);
         }
 
-        
-
-        if(!isDead && !isSpawning)
+        if (!isDead && !isSpawning)
         {
             DetIndicator();
-            //스킬 쿨탐됐으면 들어간다~??
+
             for (int i = 0; i < SKILL_NUM; i++)
-                if (canUseSkills[i] && canManaSkills[i])
+            {
+                bool bCheck = true;
+                bCheck &= canUseSkills[i];
+                bCheck &= canManaSkills[i];
+                bCheck &= !(player_anim.GetBool("isCasting"));
+                bCheck &= (i == indicatorIndex);
+
+                if (bCheck)
                 {
+                    currentIndicatingSkills[i] = true;
 
-                    if(i == indicatorIndex)
+                    bool bSkilled = false;
+
+                    if (immediateSkills[i]) bSkilled = InvokeSkills[i]();
+                    else if (Input.GetMouseButtonDown(0)) bSkilled = InvokeSkills[i]();
+
+                    if (bSkilled)
                     {
-                        currentIndicatingSkills[i] = true;
-
-                        bool bSkilled = false;
-                        if (immediateSkills[i]) bSkilled = InvokeSkills[i]();
-                        else if (Input.GetMouseButtonDown(0)) bSkilled = InvokeSkills[i]();
-
-                        if (bSkilled)
-                        {
-                            indicatorIndex = -1;
-                            sk_cds[i] = 0.0f;
-                        }
+                        EndSpell();
+                        sk_cds[i] = 0.0f;
                     }
                 }
                 else sk_cds[i] += Time.deltaTime;
+            }
+
         }
 
 
@@ -416,7 +438,7 @@ abstract public class AHeroes : MonoBehaviour
     //항상 켜놓고, 죽을 때만 끄기. revive시 다시 켜야해
     protected IEnumerator Perception_CO()
     {
-        while(true)
+        while (true)
         {
             if (isAutoAttack)
             {
@@ -546,6 +568,12 @@ abstract public class AHeroes : MonoBehaviour
         return isDead;
     }
 
+    //Spell public
+    public void SetSpellIndicator(Spell_Indicator spell_indicator)
+    {
+        this.spell_indicator = spell_indicator;
+    }
+
     public bool[] GetCurrentIndicatingSkills()
     {
         return currentIndicatingSkills;
@@ -555,4 +583,16 @@ abstract public class AHeroes : MonoBehaviour
     {
         return indicatorIndex;
     }
+
+    public SpellInfo GetSpellInfo(int i )
+    {
+        return spellInfos[i];
+    }
+
+    public Camera GetPlayerCam()
+    {
+        return playerCam;
+    }
+
+
 }
