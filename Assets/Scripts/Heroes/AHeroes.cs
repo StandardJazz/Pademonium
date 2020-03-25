@@ -17,6 +17,9 @@ abstract public class AHeroes : MonoBehaviour
     //NavMesh
     protected NavMeshAgent player_navMesh = null;
 
+    //Collider 
+    protected Collider col = null;
+
     //Move
     protected Vector3 currentPos;
     protected Vector3 targetPos;
@@ -71,6 +74,7 @@ abstract public class AHeroes : MonoBehaviour
     protected float[] sk_manas = new float[SKILL_NUM];
     protected float[] MAX_SK_CDS = new float[SKILL_NUM];
     protected float[] ct_ratio = new float[SKILL_NUM];
+    protected bool useMoveSkillNow = false;
 
     protected bool[] currentIndicatingSkills = new bool[SKILL_NUM];
     protected bool[] immediateSkills = new bool[SKILL_NUM];
@@ -123,7 +127,6 @@ abstract public class AHeroes : MonoBehaviour
     void Awake()
     {
         spawnLocation = new Vector3(5, 1, 5);
-
     }
 
     void Revive()
@@ -176,16 +179,8 @@ abstract public class AHeroes : MonoBehaviour
         applyDmgOnce = false;
     }
 
-    void DyingTest()
-    {
-        currentHP = -1.0f;
-    }
-
     protected void HeroesUpdate()
     {
-        if (Input.GetKeyDown(KeyCode.Space)) DyingTest();
-
-
         isDead = currentHP <= 0.0f;
         player_anim.SetBool("IsDead", isDead);
 
@@ -296,7 +291,6 @@ abstract public class AHeroes : MonoBehaviour
 
     private void Move()
     {
-        if(player_navMesh.)
 
         if (Input.GetKeyDown(KeyCode.A)) castAttack = true;
 
@@ -318,9 +312,10 @@ abstract public class AHeroes : MonoBehaviour
         Vector2 targetPos_xz = new Vector2(targetPos.x, targetPos.z);
         Vector2 playerGroundPos = new Vector2(transform.position.x, transform.position.z);
 
-        isMove = Vector2.Distance(targetPos_xz, playerGroundPos) > 0.01f;
+        isMove = Vector2.Distance(targetPos_xz, playerGroundPos) > 0.1f;
         isMove &= !isAttackable;
         isMove &= player_anim.GetBool("isMovable");
+        isMove &= !useMoveSkillNow;
         player_anim.SetBool("isMove", isMove);
 
         if (isMove)
@@ -399,7 +394,7 @@ abstract public class AHeroes : MonoBehaviour
                     currentIndicatingSkills[i] = true;
 
                     bool bSkilled = false;
-
+                    print("t : " + i);
                     if (immediateSkills[i]) bSkilled = InvokeSkills[i]();
                     else if (Input.GetMouseButtonDown(0)) bSkilled = InvokeSkills[i]();
 
@@ -599,5 +594,9 @@ abstract public class AHeroes : MonoBehaviour
         return playerCam;
     }
 
+    public bool IsSpawning()
+    {
+        return isSpawning;
+    }
 
 }

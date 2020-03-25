@@ -33,6 +33,7 @@ public class FollowCam : MonoBehaviour
     private Material img_effect = null;
 
     private bool doOnce;
+    private LayerMask layer;
 
     void Awake()
     {
@@ -52,6 +53,7 @@ public class FollowCam : MonoBehaviour
     
     void Start()
     {
+        layer = ~(1 << 12 | 1<< 13);
         go_Player = GameManager.player;
 
         camSlope = this.transform.rotation.eulerAngles.x * Mathf.Deg2Rad;
@@ -183,8 +185,8 @@ public class FollowCam : MonoBehaviour
     {
         Ray rayCam = myCam.ScreenPointToRay(Input.mousePosition);
         RaycastHit hitInfo;
-
-        if (Physics.Raycast(rayCam, out hitInfo, 1000.0f))
+        
+        if (Physics.Raycast(rayCam, out hitInfo, 1000.0f,layer))
         {
             targetPoint = hitInfo.point;
         }

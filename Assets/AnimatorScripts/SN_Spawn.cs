@@ -9,7 +9,6 @@ public class SN_Spawn : StateMachineBehaviour
     {
         if (stateInfo.normalizedTime > 0.95f)
             animator.SetBool("Spawning", false);
-
     }
 
     // OnStateExit is called when a transition ends and the state machine finishes evaluating this state

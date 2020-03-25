@@ -37,13 +37,13 @@ public class GameManager : MonoBehaviour
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.Confined;
         Cursor.SetCursor(cursors[0], hotSpot, cursorMode);
+
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.Confined;
     }
 
     void Update()
     {
-        Cursor.visible = true;
-        Cursor.lockState = CursorLockMode.Confined;
-
         if (Input.GetKeyDown(KeyCode.A))
         {
             attackReady = true;

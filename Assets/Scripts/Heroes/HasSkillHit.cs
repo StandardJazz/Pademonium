@@ -4,13 +4,37 @@ using UnityEngine;
 
 public class HasSkillHit : MonoBehaviour
 {
-    [SerializeField] private GameObject ownerObject = null;
+    private GameObject ownerObject = null;
     private bool isActualHitTime;
     private bool doOnce;
     private float skilldmg;
     private Collider myCollider = null;
 
+    private ParticleSystem ps = null;
+
     List<int> IDs = new List<int>();
+
+    void Awake()
+    {
+        string selfname = this.gameObject.name;
+        selfname = selfname.Substring(0, 6);
+        selfname += "Effect";
+        ownerObject = this.gameObject.transform.parent.gameObject;
+        GameObject[] pss = GameObject.FindGameObjectsWithTag("SpellEffect");
+
+        for( int i = 0; i <pss.Length; i++)
+        {
+            if (pss[i].name == selfname)
+            {
+                ps = pss[i].GetComponent<ParticleSystem>();
+            }
+        }
+        if (ps != null)
+        {
+            ps.Stop();
+            ps.time = 0.0f;
+        }
+    }
 
     //스킬이 켜졌을때, 꺼졌을때 호출
     public void SetActualHitTime(bool val)
@@ -41,6 +65,7 @@ public class HasSkillHit : MonoBehaviour
         {
             if (isActualHitTime)
             {
+                if (ps != null) ps.Play();
                 myCollider.enabled = true;
             }
             else

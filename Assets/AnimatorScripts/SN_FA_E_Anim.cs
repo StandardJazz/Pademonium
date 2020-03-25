@@ -17,8 +17,10 @@ public class SN_FA_E_Anim : StateMachineBehaviour
         else
             animator.SetBool("ESkill", false);
 
-        if (stateInfo.normalizedTime > 0.80f)
+        if (stateInfo.normalizedTime > 0.8f)
             animator.SetBool("isMovable", true);
+
+
     }
 
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
@@ -26,6 +28,7 @@ public class SN_FA_E_Anim : StateMachineBehaviour
         animator.SetBool("isCasting", false);
         animator.SetBool("ESkill", false);
         animator.SetBool("isMovable", true);
+
     }
 
     // OnStateMove is called right after Animator.OnAnimatorMove()

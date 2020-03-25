@@ -7,6 +7,7 @@ TagManager:
   - Creep
   - Hero
   - Obstacle
+  - SpellEffect
   layers:
   - Default
   - TransparentFX
@@ -21,7 +22,7 @@ TagManager:
   - Postprocessing
   - Hero
   - Creep
-  - 
+  - Obstacle
   - 
   - 
   - 
