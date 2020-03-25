@@ -21,7 +21,7 @@ public class GameManager : MonoBehaviour
         spell_Indicator = Instantiate(Resources.Load("Hero_Spell_Indicator") as GameObject, new Vector3(5.0f, 5.5f, 5.0f), Quaternion.identity);
 
         if (player == null) SceneManager.LoadScene("SelectScene");
-        spell_Indicator.GetComponent<Spell_Indicator>().SetPlayer(player);
+
         player.GetComponent<AHeroes>().SetSpellIndicator(spell_Indicator.GetComponent<Spell_Indicator>());
     }
 

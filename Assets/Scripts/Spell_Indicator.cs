@@ -17,6 +17,7 @@ public class Spell_Indicator : MonoBehaviour
     private float spellProjSize = 0.0f;
 
     private Quaternion spell_rot;
+    private Vector3 target_pos;
 
     void Awake()
     {
@@ -34,14 +35,17 @@ public class Spell_Indicator : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(index != heroCompo.GetCurrentIndicatorIndex())
+        if (Input.GetKeyDown(KeyCode.P))
+            spell_indicator.material.SetInt("_TextureIndex", 2);
+
+        if (index != heroCompo.GetCurrentIndicatorIndex())
         {
             index = heroCompo.GetCurrentIndicatorIndex();
 
             if (index >= 0 && heroCompo.GetCurrentIndicatingSkills()[index]) 
             {
-                spell_indicator.material.SetInt("_TextureIndex", index);
                 spell_indicator.enabled = true;
+                spell_indicator.material.SetInt("_TextureIndex", index);
 
                 AHeroes.SpellInfo temp = heroCompo.GetSpellInfo(index);
                 spellType = temp.spellType;
@@ -50,6 +54,7 @@ public class Spell_Indicator : MonoBehaviour
                 spellProjSize = temp.proj_size;
 
                 spell_indicator.orthographicSize = temp.proj_size;
+                print(index + "번째 indicator 출력중");
             }
             else
             {
@@ -61,8 +66,12 @@ public class Spell_Indicator : MonoBehaviour
         if(spell_indicator.enabled)
         {
             Vector3 mousePos = cam.GetMousePoint();
+            float y = mousePos.y;
+
             Transform tempT = this.gameObject.transform;
+
             Vector3 heroPos = heroPlayer.transform.position;
+
             mousePos.y = heroPos.y = 5.5f;
             Vector3 dir = (mousePos - heroPos).normalized;
 
@@ -71,15 +80,25 @@ public class Spell_Indicator : MonoBehaviour
                 case SpellType.FixedNonTarget:
                     {
                         tempT.position = heroPos + (spellbound * 0.5f) * dir;
-                        spell_rot = Quaternion.LookRotation(dir, Vector3.up);
+                        tempT.rotation = Quaternion.LookRotation(dir, Vector3.up);
                     }
                     break;
 
-                    
+                case SpellType.FreeNonTarget:
+                    {
+                        if(Vector3.Distance(heroPos, mousePos) < spellRange)
+                        {
+                            print("freenontarget");
+                            tempT.position = mousePos;
+                            //tempT.rotation = Quaternion.LookRotation(dir, Vector3.up);
+                        }
+                    }
+                    break;
 
             }
-
-            tempT.rotation = spell_rot;
+            
+            target_pos = mousePos;
+            target_pos.y = y;
         }
 
     }
@@ -89,8 +108,8 @@ public class Spell_Indicator : MonoBehaviour
         heroPlayer = player;
     }
 
-    public Quaternion GetSpellDirection()
+    public Vector3 GetTargetPos()
     {
-        return spell_rot;
+        return target_pos;
     }
 }

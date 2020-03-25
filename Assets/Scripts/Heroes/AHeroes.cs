@@ -99,8 +99,6 @@ abstract public class AHeroes : MonoBehaviour
 
     //IEnumerator
     protected IEnumerator Regeneration;
-    protected IEnumerator PerceptionFind;
-    protected IEnumerator PerceptionAttack;
     protected IEnumerator Perception;
     protected IEnumerator MeleeAttack;
 
@@ -298,6 +296,8 @@ abstract public class AHeroes : MonoBehaviour
 
     private void Move()
     {
+        if(player_navMesh.)
+
         if (Input.GetKeyDown(KeyCode.A)) castAttack = true;
 
         if (castAttack && Input.GetMouseButtonDown(0))
@@ -438,6 +438,7 @@ abstract public class AHeroes : MonoBehaviour
     //항상 켜놓고, 죽을 때만 끄기. revive시 다시 켜야해
     protected IEnumerator Perception_CO()
     {
+        bool firstTimeRotFixed = false;
         while (true)
         {
             if (isAutoAttack)
@@ -492,12 +493,16 @@ abstract public class AHeroes : MonoBehaviour
                     player_anim.SetBool("isAttackable", isAttackable);
                     objToAttack = cols[minCreepIndex].gameObject;
 
-                    this.transform.LookAt(nearestCreepPos);
-                    player_navMesh.updateRotation = false;
+                    if (!firstTimeRotFixed)
+                    {
+                        firstTimeRotFixed = true;
+                        this.transform.LookAt(nearestCreepPos);
+                    }
                 }
             }
             else
             {
+                firstTimeRotFixed = false;
                 isAttackable = false;
                 player_anim.SetBool("isAttackable", isAttackable);
 
