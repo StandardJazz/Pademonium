@@ -31,6 +31,7 @@ public class Spell_Indicator : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        heroPlayer = GameManager.player;
         heroCompo = heroPlayer.GetComponent<AHeroes>();
         cam = Camera.main.GetComponent<FollowCam>();
         spell_indicator.enabled = false;
@@ -114,11 +115,6 @@ public class Spell_Indicator : MonoBehaviour
             spell_Second_indicator.transform.position = heroPos;
         
 
-    }
-
-    public void SetPlayer(GameObject player)
-    {
-        heroPlayer = player;
     }
 
     public Vector3 GetTargetPos()

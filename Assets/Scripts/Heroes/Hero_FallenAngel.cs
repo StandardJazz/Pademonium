@@ -56,8 +56,6 @@ public class Hero_FallenAngel : AHeroes
         eSkillEnumerator = ESkill();
         rSkillEnumerator = RSkill();
 
-        spell_indicator.GetComponent<Spell_Indicator>().SetPlayer(GameManager.player);
-
         StartCoroutine(eSkillEnumerator);
         StartCoroutine(rSkillEnumerator);
     }

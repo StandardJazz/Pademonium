@@ -105,7 +105,7 @@ public class FollowCam : MonoBehaviour
                 }
             }
 
-            yield return new WaitForSeconds(0.01f);
+            yield return null;
         }
     }
 
@@ -116,10 +116,14 @@ public class FollowCam : MonoBehaviour
             float y = + Mathf.Sin(camSlope) * currentDistance;
             float z = - Mathf.Cos(camSlope) * currentDistance;
 
-            transform.position = player_Transform.position + new Vector3(0.0f, y, z);
+            transform.position = Vector3.Lerp(transform.position, player_Transform.position + new Vector3(0.0f, y, z), 0.1f);
+        }
+        else
+        {
+            MoveByMouseShift();
+
         }
 
-        MoveByMouseShift();
         DyingPostEffect();
     }
 
