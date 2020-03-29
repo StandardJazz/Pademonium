@@ -65,7 +65,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - _SliceRange: 6
-    - _TextureIndex: 2
+    - _TextureIndex: 1
     - _UVScale: 1
     m_Colors:
     - BumpMapScale: {r: 1, g: 1, b: 1, a: 1}

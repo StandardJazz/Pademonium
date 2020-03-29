@@ -51,6 +51,8 @@ abstract public class AHeroes : MonoBehaviour
     private NavMeshPath path;
 
     //Skill
+    protected Texture2D[] spell_indic_tex = null;
+
     protected Spell_Indicator spell_indicator = null;
     [SerializeField] protected Collider Q_Skill_Scope = null;
     [SerializeField] protected Collider W_Skill_Scope = null;
@@ -124,13 +126,11 @@ abstract public class AHeroes : MonoBehaviour
     //private
     private readonly float FIXED_PERCEPTION_RANGE = 9.0f;
 
-    void Awake()
-    {
-        spawnLocation = new Vector3(5, 1, 5);
-    }
 
     void Revive()
     {
+        spawnLocation = new Vector3(5, 1, 5);
+
         currentHP = maxHP;
         currentMP = maxMP;
         isDead = false;
@@ -181,6 +181,7 @@ abstract public class AHeroes : MonoBehaviour
 
     protected void HeroesUpdate()
     {
+        if (Input.GetKeyDown(KeyCode.L)) currentHP = 0.0f;
         isDead = currentHP <= 0.0f;
         player_anim.SetBool("IsDead", isDead);
 
@@ -291,7 +292,11 @@ abstract public class AHeroes : MonoBehaviour
 
     private void Move()
     {
-
+        if(Input.GetKeyDown(KeyCode.S))
+        {
+            castAttack = false;
+            targetPos = transform.position;
+        }
         if (Input.GetKeyDown(KeyCode.A)) castAttack = true;
 
         if (castAttack && Input.GetMouseButtonDown(0))
@@ -394,7 +399,6 @@ abstract public class AHeroes : MonoBehaviour
                     currentIndicatingSkills[i] = true;
 
                     bool bSkilled = false;
-                    print("t : " + i);
                     if (immediateSkills[i]) bSkilled = InvokeSkills[i]();
                     else if (Input.GetMouseButtonDown(0)) bSkilled = InvokeSkills[i]();
 

@@ -42,7 +42,7 @@ public class SpawnEffect : MonoBehaviour
                 ps.Play();
 
             if(ps.isPlaying)
-                timer += Time.deltaTime;
+                timer += Time.deltaTime *0.15f;
 
             if (timer > 3.0f)
             {

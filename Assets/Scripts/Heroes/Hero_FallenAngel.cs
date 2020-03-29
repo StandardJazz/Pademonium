@@ -78,7 +78,7 @@ public class Hero_FallenAngel : AHeroes
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.L)) currentHP = 0.0f;
+        
         HeroesUpdate();
     }
 
@@ -119,6 +119,7 @@ public class Hero_FallenAngel : AHeroes
         player_anim.SetBool("isCasting", true);
         player_anim.SetTrigger("W");
 
+        
         currentMP -= sk_manas[1];
         return true;
     }

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
 
@@ -12,18 +13,31 @@ public class GameManager : MonoBehaviour
     public static GameObject player = null;
     public static GameObject spell_Indicator = null;
 
+    public Canvas mainCanvas = null;
+
     private bool attackReady = false;
+
+    private float spawnTimer = 0.0f;
+
     
     void Awake()
     {
-        //GameObject temp = Instantiate( Resources.Load(TypeInGame.heroname) as GameObject, new Vector3(5.0f,1.0f,5.0f),Quaternion.identity);
-        player = Instantiate( Resources.Load("GoblinHunter") as GameObject, new Vector3(5.0f,1.0f,5.0f),Quaternion.identity);
-        //player = Instantiate( Resources.Load("FallenAngel") as GameObject, new Vector3(5.0f,1.0f,5.0f),Quaternion.identity);
+        player = Instantiate( Resources.Load(TypeInGame.heroname) as GameObject, new Vector3(5.0f,1.0f,5.0f),Quaternion.identity);
         spell_Indicator = Instantiate(Resources.Load("Hero_Spell_Indicator") as GameObject, new Vector3(5.0f, 5.5f, 5.0f), Quaternion.identity);
 
         if (player == null) SceneManager.LoadScene("SelectScene");
 
         player.GetComponent<AHeroes>().SetSpellIndicator(spell_Indicator.GetComponent<Spell_Indicator>());
+
+        for(int i = 4; i <15; i++)
+        {
+            if((i-4) % 3 < 2)
+            {
+                int id = (i - 4) / 3 + 1;
+                print("Sprites/Icons/" + TypeInGame.heroname + "_" + id +" i");
+                mainCanvas.transform.GetChild(i).GetComponent<Image>().sprite = Resources.Load<Sprite>("Sprites/Icons/" + TypeInGame.heroname + "_" + id);
+            }
+        }
     }
 
 
@@ -42,6 +56,7 @@ public class GameManager : MonoBehaviour
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.Confined;
     }
+
 
     void Update()
     {

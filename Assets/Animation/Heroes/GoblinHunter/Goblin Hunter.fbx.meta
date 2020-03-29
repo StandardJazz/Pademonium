@@ -584,10 +584,10 @@ ModelImporter:
     second: Death (3)
   - first:
       74: 7400022
-    second: Attack (1)
+    second: GoblinHunter_Attack1
   - first:
       74: 7400024
-    second: Attack (2)
+    second: GoblinHunter_Attack2
   - first:
       74: 7400026
     second: Attack (3)
@@ -686,8 +686,8 @@ ModelImporter:
       name: GoblinHunter_Spawn
       takeName: Scene
       internalID: 7400004
-      firstFrame: 420
-      lastFrame: 520
+      firstFrame: 370
+      lastFrame: 470
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -944,7 +944,7 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Attack (1)
+      name: GoblinHunter_Attack1
       takeName: Scene
       internalID: 7400022
       firstFrame: 1225
@@ -955,7 +955,7 @@ ModelImporter:
       cycleOffset: 0
       loop: 0
       hasAdditiveReferencePose: 0
-      loopTime: 1
+      loopTime: 0
       loopBlend: 0
       loopBlendOrientation: 0
       loopBlendPositionY: 0
@@ -973,7 +973,7 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Attack (2)
+      name: GoblinHunter_Attack2
       takeName: Scene
       internalID: 7400024
       firstFrame: 1265
@@ -984,7 +984,7 @@ ModelImporter:
       cycleOffset: 0
       loop: 0
       hasAdditiveReferencePose: 0
-      loopTime: 1
+      loopTime: 0
       loopBlend: 0
       loopBlendOrientation: 0
       loopBlendPositionY: 0

@@ -25,7 +25,7 @@ public class SelectScene : MonoBehaviour
                 TypeInGame.heroname = "FallenAngel";
                 break;
             case 1:
-                TypeInGame.heroname = "hero2";
+                TypeInGame.heroname = "GoblinHunter";
                 break;
             case 2:
                 TypeInGame.heroname = "hero3";
