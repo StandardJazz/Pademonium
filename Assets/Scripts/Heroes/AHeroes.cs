@@ -292,7 +292,7 @@ abstract public class AHeroes : MonoBehaviour
 
     private void Move()
     {
-        if(Input.GetKeyDown(KeyCode.S))
+        if (Input.GetKeyDown(KeyCode.S))
         {
             castAttack = false;
             targetPos = transform.position;
@@ -527,6 +527,11 @@ abstract public class AHeroes : MonoBehaviour
     }
 
 
+    public void GetHit(float Damage)
+    {
+        currentHP -= Damage;
+    }
+
     //public Function
     public bool IsMove()
     {
@@ -591,7 +596,7 @@ abstract public class AHeroes : MonoBehaviour
         return indicatorIndex;
     }
 
-    public SpellInfo GetSpellInfo(int i )
+    public SpellInfo GetSpellInfo(int i)
     {
         return spellInfos[i];
     }

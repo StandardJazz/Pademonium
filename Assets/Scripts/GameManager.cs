@@ -40,7 +40,6 @@ public class GameManager : MonoBehaviour
             if((i-4) % 3 < 2)
             {
                 int id = (i - 4) / 3 + 1;
-                print("Sprites/Icons/" + TypeInGame.heroname + "_" + id +" i");
                 mainCanvas.transform.GetChild(i).GetComponent<Image>().sprite = Resources.Load<Sprite>("Sprites/Icons/" + TypeInGame.heroname + "_" + id);
             }
         }

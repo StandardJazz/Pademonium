@@ -1910,7 +1910,8 @@ GameObject:
   - component: {fileID: 4320269646199858475}
   - component: {fileID: 4320269646199858474}
   - component: {fileID: -5787974857365452810}
-  m_Layer: 0
+  - component: {fileID: 8337969888606908019}
+  m_Layer: 11
   m_Name: GoblinHunter
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2009,6 +2010,19 @@ MonoBehaviour:
   W_Skill_Scope: {fileID: 0}
   E_Skill_Scope: {fileID: 0}
   R_Skill_Scope: {fileID: 0}
+--- !u!65 &8337969888606908019
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4320269646199858472}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1.5771444, z: 1}
+  m_Center: {x: 0, y: 0.73568714, z: 0}
 --- !u!1 &4320269646199858476
 GameObject:
   m_ObjectHideFlags: 0
