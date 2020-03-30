@@ -39,7 +39,7 @@ public class GH_RegularArrow : MonoBehaviour
     {
         if(col.gameObject == targetObj)
         {
-            targetObj.GetComponent<ACreeps>().GetHit(GameManager.player, dmg);
+            if(targetObj != null )targetObj.GetComponent<ACreeps>().GetHit(GameManager.player, dmg);
             this.gameObject.SetActive(false);
         }
     }

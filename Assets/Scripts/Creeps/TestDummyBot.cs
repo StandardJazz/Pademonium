@@ -6,9 +6,11 @@ public class TestDummyBot : ACreeps
 {
     void Start()
     {
-        CreepStart();
-        max_hp = 1000.0f;
-        creep_anim = this.GetComponent<Animator>();
-        current_hp = max_hp;
+        CreepsStart();
+        
+        SetStats(300.0f, 3.0f, 45.0f, 3.0f, 2.0f);
+        SetComponents();
+        SetCoroutine();
     }
+
 }

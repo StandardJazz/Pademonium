@@ -4,6 +4,11 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
+public enum CROWD_CONTROL_TYPE
+{
+    NONE = 1 << 0  ,SLOW = 1 << 1,STUN = 1 << 2 
+}
+
 
 public class GameManager : MonoBehaviour
 {
@@ -22,6 +27,7 @@ public class GameManager : MonoBehaviour
     
     void Awake()
     {
+        TypeInGame.heroname = "GoblinHunter";
         player = Instantiate( Resources.Load(TypeInGame.heroname) as GameObject, new Vector3(5.0f,1.0f,5.0f),Quaternion.identity);
         spell_Indicator = Instantiate(Resources.Load("Hero_Spell_Indicator") as GameObject, new Vector3(5.0f, 5.5f, 5.0f), Quaternion.identity);
 

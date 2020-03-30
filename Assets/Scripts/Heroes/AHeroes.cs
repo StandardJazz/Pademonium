@@ -488,9 +488,12 @@ abstract public class AHeroes : MonoBehaviour
                 }
                 else
                 {
-                    isAttackable = true;
-                    player_anim.SetBool("isAttackable", isAttackable);
                     objToAttack = cols[minCreepIndex].gameObject;
+
+                    isAttackable = true;
+                    isAttackable &= !objToAttack.GetComponent<ACreeps>().IsDead();
+
+                    player_anim.SetBool("isAttackable", isAttackable);
 
                     if (!firstTimeRotFixed)
                     {

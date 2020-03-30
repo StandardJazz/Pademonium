@@ -14,6 +14,8 @@ public class GH_StickyBomb : MonoBehaviour
     private float timer = 0.0f;
     private float keepTime = 3.0f;
 
+    private float per = 0.0f;
+
     void Awake()
     {
         smudge = transform.GetChild(0).gameObject;
@@ -60,6 +62,20 @@ public class GH_StickyBomb : MonoBehaviour
         }
     }
 
+    void OnTriggerStay(Collider col)
+    {
+        if(per > 0.5f)
+        {
+            per = 0.0f;
+            if (col.tag == "Creep")
+            {
+                col.gameObject.GetComponent<ACreeps>().GetHit(5.0f, CROWD_CONTROL_TYPE.SLOW, 0.5f);
+                print("sticky bommb");
+            }
+        }
+        per += Time.deltaTime;
+    }
+
     public void ActivateBomb(Vector3 startPos, Vector3 targetPos)
     {
         this.gameObject.SetActive(true);
@@ -71,5 +87,6 @@ public class GH_StickyBomb : MonoBehaviour
         smudge.SetActive(false);
         bomb.SetActive(true);
         timer = 0.0f;
+        per = 0.0f;
     }
 }

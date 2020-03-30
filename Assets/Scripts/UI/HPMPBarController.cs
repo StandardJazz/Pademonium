@@ -56,11 +56,9 @@ public class HPMPBarController : MonoBehaviour
         {
             if (CreepList[i] != null && CreepList[i].GetComponent<ACreeps>().IsDead())
             {
-                Destroy(CreepList[i]);
                 Destroy(CreepBarList[i]);
                 Destroy(CreepBarImgList[i]);
-
-                CreepList.RemoveAt(i);
+                
                 CreepBarList.RemoveAt(i);
                 CreepBarImgList.RemoveAt(i);
                 continue;

@@ -74,7 +74,7 @@ public class Hero_GoblinHunter : AHeroes
         HeroesStart();
 
         SetSkill(mana_costs, coolTime_costs, skillDmgs, noCastSkills);
-        SetStats(500.0f, 3.0f, 200.0f, 3.0f, 200.0f, 2.0f, 6.0f);
+        SetStats(500.0f, 3.0f, 200.0f, 3.0f, 60.0f, 2.0f, 6.0f);
         SetComponents();
         SetCoroutine();
         SetSpellInfos(spellInfos);
@@ -107,7 +107,7 @@ public class Hero_GoblinHunter : AHeroes
                 {
                     if(!regularArrows[i].activeSelf)
                     {
-                        Vector3 temp = (transform.up *1.25f + transform.forward).normalized;
+                        Vector3 temp = (transform.up * 1.25f + transform.forward).normalized;
                         regularArrows[i].SetActive(true);
                         regularArrows[i].GetComponent<GH_RegularArrow>().SetTarget(this.transform.position + temp * 1.5f, objToAttack, attackDamage);
                         break;
