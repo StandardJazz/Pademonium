@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class FollowCam : MonoBehaviour
 {
@@ -185,18 +186,27 @@ public class FollowCam : MonoBehaviour
         transform.position += direction;
     }
 
-    public Vector3 GetMousePoint()
+    public bool GetMousePoint(out Vector3 targetPos)
     {
         Ray rayCam = myCam.ScreenPointToRay(Input.mousePosition);
         RaycastHit hitInfo;
-        
-        if (Physics.Raycast(rayCam, out hitInfo, 1000.0f,layer))
+        NavMeshHit hit;
+        targetPos = Vector3.zero;
+
+        if (Physics.Raycast(rayCam, out hitInfo, 1000.0f, layer))
         {
-            targetPoint = hitInfo.point;
+            targetPos = hitInfo.point;
+
+            if (NavMesh.SamplePosition(targetPos, out hit, 5, NavMesh.AllAreas))
+            {
+                targetPos = hit.position;
+                return true;
+            }
+            else
+                return false;
         }
 
-        return targetPoint;
+        return false;
     }
-
-
+    
 }

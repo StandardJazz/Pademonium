@@ -9,12 +9,14 @@ public class GH_RegularArrow : MonoBehaviour
     float dmg;
     GameObject owner = null;
 
+    private float speedFactor = 1.0f;
 
    
     // Start is called before the first frame update
     void Start()
     {
         owner = GameManager.player;
+        speedFactor = 1.0f;
     }
 
     // Update is called once per frame
@@ -31,7 +33,7 @@ public class GH_RegularArrow : MonoBehaviour
         temp.y = startPos.y;
 
         transform.forward = (temp - startPos).normalized;
-        transform.position += (temp - startPos).normalized * 0.35f;
+        transform.position += (temp - startPos).normalized * 0.35f * speedFactor;
     }
    
 
@@ -44,13 +46,14 @@ public class GH_RegularArrow : MonoBehaviour
         }
     }
 
-    public void SetTarget(Vector3 startPoint, GameObject targetObj, float attackDamage)
+    public void SetTarget(Vector3 startPoint, GameObject targetObj, float attackDamage,float attackSpeed)
     {
         this.gameObject.SetActive(true);
         startPos = startPoint;
         this.targetObj = targetObj;
         transform.position = startPos;
-    
+        speedFactor = attackSpeed / 2.0f;
         dmg = attackDamage;
+        if (speedFactor < 1.0f) speedFactor = 1.0f;
     }
 }

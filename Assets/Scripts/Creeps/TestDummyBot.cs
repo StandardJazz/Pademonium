@@ -8,7 +8,7 @@ public class TestDummyBot : ACreeps
     {
         CreepsStart();
         
-        SetStats(300.0f, 3.0f, 45.0f, 3.0f, 2.0f,1.0f,2.0f);
+        SetStats(300.0f, 3.0f, 45.0f, 3.0f, 2.0f,1.0f,3.0f);
         SetComponents();
         SetCoroutine();
         bAggressive = false;

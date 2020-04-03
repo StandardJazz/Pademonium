@@ -109,7 +109,7 @@ public class Hero_GoblinHunter : AHeroes
                     {
                         Vector3 temp = (transform.up * 1.25f + transform.forward).normalized;
                         regularArrows[i].SetActive(true);
-                        regularArrows[i].GetComponent<GH_RegularArrow>().SetTarget(this.transform.position + temp * 1.5f, objToAttack, attackDamage);
+                        regularArrows[i].GetComponent<GH_RegularArrow>().SetTarget(this.transform.position + temp * 1.5f, objToAttack, attackDamage,attackSpeed);
                         break;
                     }
                 }

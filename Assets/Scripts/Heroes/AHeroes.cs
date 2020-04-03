@@ -21,6 +21,7 @@ abstract public class AHeroes : MonoBehaviour
     protected Collider col = null;
 
     //Move
+    protected bool isMouseMapping;
     protected Vector3 currentPos;
     protected Vector3 targetPos;
     Quaternion directionRotation;   //회전 부드럽게는 됐는데, 짧은 이동때 다 돌지 않음.
@@ -177,6 +178,7 @@ abstract public class AHeroes : MonoBehaviour
         isDead = false;
         attackTimer = attackSpeed;
         applyDmgOnce = false;
+        isMouseMapping = false;
     }
 
     protected void HeroesUpdate()
@@ -252,9 +254,7 @@ abstract public class AHeroes : MonoBehaviour
     protected void SetSpellInfos(SpellInfo[] spellInfos)
     {
         for (int i = 0; i < SKILL_NUM; i++)
-        {
             this.spellInfos[i] = spellInfos[i];
-        }
     }
 
     protected void SetStats(float hp, float perhp, float mp, float permp, float dmg, float attackspeed, float attackrange)
@@ -302,7 +302,7 @@ abstract public class AHeroes : MonoBehaviour
         if (castAttack && Input.GetMouseButtonDown(0))
         {
             isAutoAttack = true;
-            targetPos = playerCam.GetComponent<FollowCam>().GetMousePoint();
+            isMouseMapping = playerCam.GetComponent<FollowCam>().GetMousePoint(out targetPos);
         }
 
         if (Input.GetMouseButtonDown(1))
@@ -310,14 +310,14 @@ abstract public class AHeroes : MonoBehaviour
             EndSpell();
             isAutoAttack = false;
             castAttack = false;
-            targetPos = playerCam.GetComponent<FollowCam>().GetMousePoint();
+            isMouseMapping = playerCam.GetComponent<FollowCam>().GetMousePoint(out targetPos);
         }
-
 
         Vector2 targetPos_xz = new Vector2(targetPos.x, targetPos.z);
         Vector2 playerGroundPos = new Vector2(transform.position.x, transform.position.z);
 
         isMove = Vector2.Distance(targetPos_xz, playerGroundPos) > 0.1f;
+        isMove &= isMouseMapping;
         isMove &= !isAttackable;
         isMove &= player_anim.GetBool("isMovable");
         isMove &= !useMoveSkillNow;
@@ -337,6 +337,7 @@ abstract public class AHeroes : MonoBehaviour
             player_anim.SetFloat("Speed", 0.0f);
         }
     }
+
     private void DetIndicator()
     {
         int skillIndex = -1;

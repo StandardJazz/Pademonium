@@ -31,12 +31,16 @@ abstract public class ACreeps : MonoBehaviour
     protected GameObject objToAttack = null;
 
     //move
-    protected float norSpeed = 1.0f;
-    protected float maxSpeed = 2.0f;
+    protected float speed = 1.0f;
+    protected float finalSpeed = 1.0f;
     protected float speedFactor = 1.0f;
     protected bool isChasing;
+    protected bool isFatalCC;
     protected Vector3 targetPos = Vector3.zero;
     protected bool isMove;
+
+    protected float MAX_SPEED;
+
 
     //die
     private bool isDead = false;
@@ -45,7 +49,6 @@ abstract public class ACreeps : MonoBehaviour
     protected IEnumerator AdjustCrowdControl;
     protected IEnumerator IdlePatrol;
     protected IEnumerator MeleeAttack;
-
 
 
     //state
@@ -60,10 +63,13 @@ abstract public class ACreeps : MonoBehaviour
         isDead = false;
         attackTimer = attackSpeed;
         speedFactor = 1.0f;
+        isFatalCC = false;
     }
 
     protected void CreepsUpdate()
     {
+        print(cc_state);
+
         isDead = current_hp <= 0.0f;
         creep_anim.SetBool("isDead", isDead);
 
@@ -92,8 +98,8 @@ abstract public class ACreeps : MonoBehaviour
         this.attackDmg = dmg;
         this.attackSpeed = attackspeed;
         this.attackRange = attackrange;
-        this.norSpeed = norspeed;
-        this.maxSpeed = maxspeed;
+        this.speed = norspeed;
+        this.MAX_SPEED = maxspeed;
         perceptionRange = 8.0f;
     }
 
@@ -108,9 +114,11 @@ abstract public class ACreeps : MonoBehaviour
     {
         MeleeAttack = MeleeAttack_CO();
         Perception = Perception_CO();
+        IdlePatrol = IdlePatrol_CO();
 
         StartCoroutine(MeleeAttack);
         StartCoroutine(Perception);
+        StartCoroutine(IdlePatrol);
     }
 
     private void Move()
@@ -118,11 +126,10 @@ abstract public class ACreeps : MonoBehaviour
         Vector2 targetPos_xz = new Vector2(targetPos.x, targetPos.z);
         Vector2 playerGroundPos = new Vector2(transform.position.x, transform.position.z);
 
-        if()
-
         isMove = Vector2.Distance(targetPos_xz, playerGroundPos) > 0.1f;
         isMove &= !isAttackable;
         isMove &= creep_anim.GetBool("isMovable");
+        isMove &= !isFatalCC;
         creep_anim.SetBool("isMove", isMove);
 
         if (isMove)
@@ -130,15 +137,18 @@ abstract public class ACreeps : MonoBehaviour
             creep_nav.isStopped = false;
             creep_nav.updateRotation = true;
             creep_nav.SetDestination(targetPos);
-            norSpeed = Vector3.Distance(Vector3.zero, creep_nav.velocity) / maxSpeed;
-            creep_anim.SetFloat("Speed", norSpeed);
-            print("move");
+            //norSpeed = Vector3.Distance(Vector3.zero, creep_nav.velocity) / maxSpeed;
+            //creep_anim.SetFloat("Speed", norSpeed);
         }
         else
         {
             creep_nav.isStopped = true;
-            creep_anim.SetFloat("Speed", 0.0f);
+            //creep_anim.SetFloat("Speed", 0.0f);
         }
+
+        finalSpeed = speedFactor * speed;
+        creep_nav.speed = finalSpeed;
+        creep_anim.SetFloat("Speed", finalSpeed / MAX_SPEED);
     }
     
     protected IEnumerator Perception_CO()
@@ -154,8 +164,7 @@ abstract public class ACreeps : MonoBehaviour
                 float nearHeroDistance = float.MaxValue;
                 int minHeroIndex = 0;
                 Vector3 nearestHeroPos = this.transform.position;
-
-                print("cols.Length : " + cols.Length);
+                
                 //경로 중 제일 짧은 것을 선출.
                 for (int i = 0; i < cols.Length; i++)
                 {
@@ -191,8 +200,9 @@ abstract public class ACreeps : MonoBehaviour
                     objToAttack = cols[minHeroIndex].gameObject;
 
                     isAttackable = true;
-                    creep_anim.SetBool("isAttackable", isAttackable);
+                    isChasing = true;
 
+                    creep_anim.SetBool("isAttackable", isAttackable);
                     if (!firstTimeRotFixed)
                     {
                         firstTimeRotFixed = true;
@@ -206,16 +216,18 @@ abstract public class ACreeps : MonoBehaviour
 
                     if (nearHeroDistance < perceptionRange)
                     {
+                        //인지 범위 내의 영웅 발견했을 시
                         isChasing = true;
+
                         targetPos = nearestHeroPos;
-                        creep_nav.speed = maxSpeed * speedFactor;
                     }
                     else
                     {
+                        //인지 범위 밖으로 갔을 경우. 
                         isChasing = false;
-                        targetPos = transform.position;
                         bAggressive = false;
-                        creep_nav.speed = norSpeed * speedFactor;
+
+                        targetPos = transform.position;
                     }
                 }
 
@@ -225,7 +237,7 @@ abstract public class ACreeps : MonoBehaviour
                 firstTimeRotFixed = false;
                 isAttackable = false;
                 creep_anim.SetBool("isAttackable", isAttackable);
-
+                isChasing = false;
                 objToAttack = null;
             }
 
@@ -240,6 +252,35 @@ abstract public class ACreeps : MonoBehaviour
                 applyDmgOnce = true;
             }
             yield return new WaitForSeconds(0.001f);
+        }
+    }
+
+    protected IEnumerator IdlePatrol_CO()
+    {
+        float ranSec = 1.0f;
+        float ranX = 1.0f;
+        float ranZ = 1.0f;
+        Vector3 randomTarget = Vector3.zero;
+
+        while(true)
+        {
+            if(!isChasing)
+            {
+                ranSec = Random.Range(3.5f, 7.0f);
+
+                ranX = Random.Range(-1.0f, 1.0f);
+                ranZ = Random.Range(-1.0f, 1.0f);
+
+                randomTarget = (new Vector3(ranX, 0, ranZ)).normalized * 3.0f;
+
+                NavMeshHit hit;
+                Vector3 tempTarget = transform.position + randomTarget;
+
+                if (NavMesh.SamplePosition(tempTarget, out hit, 5,NavMesh.AllAreas))targetPos = hit.position;
+                else targetPos = transform.position;
+            }
+
+            yield return new WaitForSeconds(ranSec);
         }
     }
 
@@ -303,16 +344,29 @@ abstract public class ACreeps : MonoBehaviour
             case CROWD_CONTROL_TYPE.NONE:
                 break;
             case CROWD_CONTROL_TYPE.SLOW:
-                speedFactor = 0.5f;
+                speedFactor *= 0.5f;
                 break;
             case CROWD_CONTROL_TYPE.STUN:
-                //speedFactor = 0.0f;
+                isFatalCC = true;
                 break;
         }
+
         yield return new WaitForSeconds(adjustTime);
-        cc_state &= ~type;
-        speedFactor = 1.0f;
-        yield return null;
+        cc_state &= (~type);
+
+        switch (type)
+        {
+            case CROWD_CONTROL_TYPE.NONE:
+                break;
+            case CROWD_CONTROL_TYPE.SLOW:
+                speedFactor *= 2.0f;
+                break;
+            case CROWD_CONTROL_TYPE.STUN:
+                isFatalCC = true;
+                break;
+        }
+
+        yield break;
     }
 
     protected IEnumerator Dying_Co()
@@ -339,5 +393,10 @@ abstract public class ACreeps : MonoBehaviour
     public bool CanSee()
     {
         return true;
+    }
+
+    public CROWD_CONTROL_TYPE GetCCType()
+    {
+        return cc_state;
     }
 }

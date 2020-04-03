@@ -81,7 +81,9 @@ public class Spell_Indicator : MonoBehaviour
 
         }
 
-        Vector3 mousePos = cam.GetMousePoint();
+        Vector3 mousePos = Vector3.zero;
+        cam.GetMousePoint(out mousePos);
+
         float height = mousePos.y;
         Vector3 heroPos = heroPlayer.transform.position;
         mousePos.y = heroPos.y = 5.5f;

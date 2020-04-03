@@ -5,11 +5,13 @@ using UnityEngine.UI;
 
 public class HPMPBarController : MonoBehaviour
 {
+    //CROWD_CONTROL_TYPE
     [SerializeField] private GameObject pf_creep_hp = null;
     List<GameObject> CreepList = new List<GameObject>();
     List<GameObject> CreepBarList = new List<GameObject>();
     List<Image> CreepBarImgList = new List<Image>();
 
+    private GameObject test = null;
 
     [SerializeField] private GameObject pf_hero_bar = null;
 
@@ -22,6 +24,12 @@ public class HPMPBarController : MonoBehaviour
 
 
     Camera cam;
+
+    void Awake()
+    {
+        test = Instantiate(Resources.Load<GameObject>("cr_bar"));
+
+    }
 
 
     // Start is called before the first frame update
@@ -114,6 +122,6 @@ public class HPMPBarController : MonoBehaviour
 
     public void AddCreep(GameObject creep)
     {
-        CreepList.Add(creep);
+       
     }
 }

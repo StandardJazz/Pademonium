@@ -6,7 +6,10 @@ using UnityEngine.SceneManagement;
 
 public enum CROWD_CONTROL_TYPE
 {
-    NONE = 1 << 0  ,SLOW = 1 << 1,STUN = 1 << 2 
+    NONE = 0x00000000,
+    SLOW = 0x00000001,
+    ROOT = 0x00000002,
+    STUN = 0x00000004
 }
 
 
@@ -40,7 +43,7 @@ public class GameManager : MonoBehaviour
             if((i-4) % 3 < 2)
             {
                 int id = (i - 4) / 3 + 1;
-                mainCanvas.transform.GetChild(i).GetComponent<Image>().sprite = Resources.Load<Sprite>("Sprites/Icons/" + TypeInGame.heroname + "_" + id);
+                mainCanvas.transform.GetChild(i).GetComponent<Image>().sprite = Resources.Load<Sprite>("Sprites/Skill_Icons/" + TypeInGame.heroname + "_" + id);
             }
         }
     }
