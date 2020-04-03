@@ -68,7 +68,12 @@ abstract public class ACreeps : MonoBehaviour
 
     protected void CreepsUpdate()
     {
-        print(cc_state);
+        if(Input.GetKeyDown(KeyCode.K))
+        {
+            cc_state |= CROWD_CONTROL_TYPE.STUN;
+            AdjustCrowdControl = AdjustCrowdControl_CO(CROWD_CONTROL_TYPE.STUN,5.0f);
+            StartCoroutine(AdjustCrowdControl);
+        }
 
         isDead = current_hp <= 0.0f;
         creep_anim.SetBool("isDead", isDead);
@@ -362,7 +367,7 @@ abstract public class ACreeps : MonoBehaviour
                 speedFactor *= 2.0f;
                 break;
             case CROWD_CONTROL_TYPE.STUN:
-                isFatalCC = true;
+                isFatalCC = false;
                 break;
         }
 
@@ -376,7 +381,7 @@ abstract public class ACreeps : MonoBehaviour
         print("creep Dead : " + isDead);
 
         yield return new WaitForSeconds(2.0f);
-        Destroy(this.gameObject);
+        this.gameObject.SetActive(false);
     }
 
     //In Canvas
