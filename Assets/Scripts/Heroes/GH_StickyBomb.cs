@@ -38,7 +38,7 @@ public class GH_StickyBomb : MonoBehaviour
     {
         float dist = Vector3.Distance(targetPoint, transform.position);
 
-        if(dist < 0.5f)
+        if(dist < 0.1f)
         {
             bomb.SetActive(false);
             transform.rotation = Quaternion.identity;
@@ -70,7 +70,6 @@ public class GH_StickyBomb : MonoBehaviour
             if (col.tag == "Creep")
             {
                 col.gameObject.GetComponent<ACreeps>().GetHit(0.1f, CROWD_CONTROL_TYPE.SLOW, 0.2f);
-                print("sticky bommb");
             }
         }
         per += Time.deltaTime;

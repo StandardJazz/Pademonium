@@ -70,7 +70,6 @@ abstract public class ACreeps : MonoBehaviour
     {
         if(Input.GetKeyDown(KeyCode.K))
         {
-            cc_state |= CROWD_CONTROL_TYPE.STUN;
             AdjustCrowdControl = AdjustCrowdControl_CO(CROWD_CONTROL_TYPE.STUN,5.0f);
             StartCoroutine(AdjustCrowdControl);
         }
@@ -314,7 +313,6 @@ abstract public class ACreeps : MonoBehaviour
     {
         GetHit(Damage);
 
-        cc_state |= cctype;
 
         AdjustCrowdControl = AdjustCrowdControl_CO(cctype, adjustTime);
         StartCoroutine(AdjustCrowdControl);
@@ -344,12 +342,14 @@ abstract public class ACreeps : MonoBehaviour
 
     protected IEnumerator AdjustCrowdControl_CO(CROWD_CONTROL_TYPE type, float adjustTime)
     {
+        cc_state |= type;
+
         switch (type)
         {
             case CROWD_CONTROL_TYPE.NONE:
                 break;
             case CROWD_CONTROL_TYPE.SLOW:
-                speedFactor *= 0.5f;
+                speedFactor = 0.5f;
                 break;
             case CROWD_CONTROL_TYPE.STUN:
                 isFatalCC = true;
@@ -364,7 +364,7 @@ abstract public class ACreeps : MonoBehaviour
             case CROWD_CONTROL_TYPE.NONE:
                 break;
             case CROWD_CONTROL_TYPE.SLOW:
-                speedFactor *= 2.0f;
+                speedFactor = 1.0f;
                 break;
             case CROWD_CONTROL_TYPE.STUN:
                 isFatalCC = false;

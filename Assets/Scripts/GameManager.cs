@@ -9,7 +9,8 @@ public enum CROWD_CONTROL_TYPE
     NONE = 0x00000000,
     SLOW = 0x00000001,
     ROOT = 0x00000002,
-    STUN = 0x00000004
+    STUN = 0x00000004,
+    MAX_VAL = STUN,
 }
 
 

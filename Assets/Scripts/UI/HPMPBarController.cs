@@ -85,7 +85,8 @@ public class HPMPBarController : MonoBehaviour
     void ShowCreepBar()
     {
         int index = 0;
-        foreach(var tempCreep in getCreepList())
+
+        foreach (var tempCreep in getCreepList())
         {
             if(tempCreep.GetComponent<ACreeps>().IsDead())
             {
@@ -101,7 +102,7 @@ public class HPMPBarController : MonoBehaviour
                     NewCreepBarList[index].transform.position = cam.ViewportToScreenPoint(viewportPt);
 
                     CROWD_CONTROL_TYPE ctype = tempCreep.GetComponent<ACreeps>().GetCCType();
-                    int i = 0;
+
                     if(ctype == CROWD_CONTROL_TYPE.NONE)
                     {
                         creepCCBarImgs[index][0].sprite = cc_icons[0];
@@ -110,12 +111,29 @@ public class HPMPBarController : MonoBehaviour
                     }
                     else
                     {
-                        if ((ctype & CROWD_CONTROL_TYPE.STUN) == CROWD_CONTROL_TYPE.STUN)
-                            creepCCBarImgs[index][i++].sprite = cc_icons[3];
-                        if ((ctype & CROWD_CONTROL_TYPE.ROOT) == CROWD_CONTROL_TYPE.ROOT)
-                            creepCCBarImgs[index][i++].sprite = cc_icons[2];
-                        if ((ctype & CROWD_CONTROL_TYPE.SLOW) == CROWD_CONTROL_TYPE.SLOW)
-                            creepCCBarImgs[index][i++].sprite = cc_icons[1];
+                        int i = 0;
+                        int cc_Icon_Index = 3;
+
+                        int maxval = (int)CROWD_CONTROL_TYPE.MAX_VAL;
+                        //스턴을 먹인 후에 끝날때 쯤 슬로우 걸었을 때, 모두 슬로우 표시가 됨. 
+                        for (int k = 0; k < creepCCBarImgs[index].Length;)
+                        {
+                            if (maxval == (int)CROWD_CONTROL_TYPE.NONE) break;
+                            if (((CROWD_CONTROL_TYPE)maxval & ctype) == (CROWD_CONTROL_TYPE)maxval)
+                            {
+                                creepCCBarImgs[index][k].sprite = cc_icons[cc_Icon_Index];
+                                for (int h = k+1; h < creepCCBarImgs[index].Length; h++)
+                                    creepCCBarImgs[index][h].sprite = cc_icons[0];
+                                k++;
+                            }
+                            else
+                            {
+                                creepCCBarImgs[index][k].sprite = cc_icons[0];
+                            }
+
+                            cc_Icon_Index--;
+                            maxval >>= 1;
+                        }
                     }
                 }
                 else
