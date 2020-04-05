@@ -64,12 +64,12 @@ public class GH_StickyBomb : MonoBehaviour
 
     void OnTriggerStay(Collider col)
     {
-        if(per > 0.01f)
+        if(per > 0.1f)
         {
             per = 0.0f;
             if (col.tag == "Creep")
             {
-                col.gameObject.GetComponent<ACreeps>().GetHit(0.1f, CROWD_CONTROL_TYPE.SLOW, 0.2f);
+                col.gameObject.GetComponent<ACreeps>().GetHit(0.1f, CROWD_CONTROL_TYPE.SLOW, 0.5f);
             }
         }
         per += Time.deltaTime;

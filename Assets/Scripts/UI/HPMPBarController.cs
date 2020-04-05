@@ -44,7 +44,7 @@ public class HPMPBarController : MonoBehaviour
         for (int i = 0; i < 20; i++)
         {
             NewCreepBarList.Add(Instantiate(Resources.Load<GameObject>("cr_bar"), new Vector3(0, 0, 0), Quaternion.identity, transform));
-            Image[] tempimgs =  NewCreepBarList[i].GetComponentsInChildren<Image>();
+            Image[] tempimgs = NewCreepBarList[i].GetComponentsInChildren<Image>();
             creepBarImgs.Add(tempimgs[1]);
             tempimgs[2].sprite = cc_icons[0];
             tempimgs[3].sprite = cc_icons[0];
@@ -55,7 +55,7 @@ public class HPMPBarController : MonoBehaviour
             NewCreepBarList[i].SetActive(false);
         }
 
-      
+
     }
 
 
@@ -67,7 +67,7 @@ public class HPMPBarController : MonoBehaviour
         getCreepList = gameManager.GetComponent<CreepsManager>().GetCreepList;
 
         int index = 0;
-        foreach(var temp in getCreepList())
+        foreach (var temp in getCreepList())
         {
             NewCreepBarList[index].SetActive(true);
             index++;
@@ -88,10 +88,9 @@ public class HPMPBarController : MonoBehaviour
 
         foreach (var tempCreep in getCreepList())
         {
-            if(tempCreep.GetComponent<ACreeps>().IsDead())
+            if (tempCreep.GetComponent<ACreeps>().IsDead())
             {
                 NewCreepBarList[index].SetActive(false);
-
             }
             else
             {
@@ -103,37 +102,28 @@ public class HPMPBarController : MonoBehaviour
 
                     CROWD_CONTROL_TYPE ctype = tempCreep.GetComponent<ACreeps>().GetCCType();
 
-                    if(ctype == CROWD_CONTROL_TYPE.NONE)
-                    {
-                        creepCCBarImgs[index][0].sprite = cc_icons[0];
-                        creepCCBarImgs[index][1].sprite = cc_icons[0];
-                        creepCCBarImgs[index][2].sprite = cc_icons[0];
-                    }
-                    else
-                    {
-                        int i = 0;
-                        int cc_Icon_Index = 3;
+                    int emptyStartIndex = 0;
+                    int cc_Icon_Index = cc_icons.Length - 1;
+                    int maxval = (int)CROWD_CONTROL_TYPE.MAX_VAL;
 
-                        int maxval = (int)CROWD_CONTROL_TYPE.MAX_VAL;
-                        //스턴을 먹인 후에 끝날때 쯤 슬로우 걸었을 때, 모두 슬로우 표시가 됨. 
-                        for (int k = 0; k < creepCCBarImgs[index].Length;)
+                    for (int k = 0; k < creepCCBarImgs[index].Length;)
+                    {
+                        if (maxval == (int)CROWD_CONTROL_TYPE.NONE)
                         {
-                            if (maxval == (int)CROWD_CONTROL_TYPE.NONE) break;
-                            if (((CROWD_CONTROL_TYPE)maxval & ctype) == (CROWD_CONTROL_TYPE)maxval)
-                            {
-                                creepCCBarImgs[index][k].sprite = cc_icons[cc_Icon_Index];
-                                for (int h = k+1; h < creepCCBarImgs[index].Length; h++)
-                                    creepCCBarImgs[index][h].sprite = cc_icons[0];
-                                k++;
-                            }
-                            else
-                            {
-                                creepCCBarImgs[index][k].sprite = cc_icons[0];
-                            }
-
-                            cc_Icon_Index--;
-                            maxval >>= 1;
+                            for (int h = emptyStartIndex; h < creepCCBarImgs[index].Length; h++)
+                                creepCCBarImgs[index][h].sprite = cc_icons[0];
+                            break;
                         }
+
+                        if (((CROWD_CONTROL_TYPE)maxval & ctype) == (CROWD_CONTROL_TYPE)maxval)
+                        {
+                            creepCCBarImgs[index][k].sprite = cc_icons[cc_Icon_Index];
+                            k++;
+                            emptyStartIndex = k;
+                        }
+
+                        cc_Icon_Index--;
+                        maxval >>= 1;
                     }
                 }
                 else
@@ -150,7 +140,7 @@ public class HPMPBarController : MonoBehaviour
         //{
         //    if (CreepList[i] != null && CreepList[i].GetComponent<ACreeps>().IsDead())
         //    {
-                
+
         //        continue;
         //    }
 

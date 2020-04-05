@@ -13,7 +13,6 @@ public enum CROWD_CONTROL_TYPE
     MAX_VAL = STUN,
 }
 
-
 public class GameManager : MonoBehaviour
 {
     public Texture2D[] cursors = new Texture2D[2];
@@ -21,6 +20,7 @@ public class GameManager : MonoBehaviour
     public Vector2 hotSpot = Vector2.zero;
     public static GameObject player = null;
     public static GameObject spell_Indicator = null;
+    public static int CC_COUNT = 3;
 
     public Canvas mainCanvas = null;
 

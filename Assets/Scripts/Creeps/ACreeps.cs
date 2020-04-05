@@ -35,7 +35,6 @@ abstract public class ACreeps : MonoBehaviour
     protected float finalSpeed = 1.0f;
     protected float speedFactor = 1.0f;
     protected bool isChasing;
-    protected bool isFatalCC;
     protected Vector3 targetPos = Vector3.zero;
     protected bool isMove;
 
@@ -54,6 +53,7 @@ abstract public class ACreeps : MonoBehaviour
     //state
     protected CROWD_CONTROL_TYPE cc_state;
 
+    protected int[] cc_CrsCount;
 
     protected void CreepsStart()
     {
@@ -63,14 +63,25 @@ abstract public class ACreeps : MonoBehaviour
         isDead = false;
         attackTimer = attackSpeed;
         speedFactor = 1.0f;
-        isFatalCC = false;
+        cc_state = CROWD_CONTROL_TYPE.NONE;
+
+        cc_CrsCount = new int[GameManager.CC_COUNT];
+        cc_CrsCount.Initialize();
     }
 
     protected void CreepsUpdate()
     {
-        if(Input.GetKeyDown(KeyCode.K))
+        //STUN Test
+        if (Input.GetKeyDown(KeyCode.K))
         {
-            AdjustCrowdControl = AdjustCrowdControl_CO(CROWD_CONTROL_TYPE.STUN,5.0f);
+            AdjustCrowdControl = AdjustCrowdControl_CO(CROWD_CONTROL_TYPE.STUN, 5.0f);
+            StartCoroutine(AdjustCrowdControl);
+        }
+
+        //ROOT Test
+        if (Input.GetKeyDown(KeyCode.J))
+        {
+            AdjustCrowdControl = AdjustCrowdControl_CO(CROWD_CONTROL_TYPE.ROOT, 3.0f);
             StartCoroutine(AdjustCrowdControl);
         }
 
@@ -91,9 +102,12 @@ abstract public class ACreeps : MonoBehaviour
             creep_nav.isStopped = true;
         }
         else
+        {
             Move();
-
+        }
     }
+
+
 
     protected void SetStats(float hp, float perhp, float dmg, float attackspeed, float attackrange, float norspeed, float maxspeed)
     {
@@ -133,7 +147,6 @@ abstract public class ACreeps : MonoBehaviour
         isMove = Vector2.Distance(targetPos_xz, playerGroundPos) > 0.1f;
         isMove &= !isAttackable;
         isMove &= creep_anim.GetBool("isMovable");
-        isMove &= !isFatalCC;
         creep_anim.SetBool("isMove", isMove);
 
         if (isMove)
@@ -154,7 +167,7 @@ abstract public class ACreeps : MonoBehaviour
         creep_nav.speed = finalSpeed;
         creep_anim.SetFloat("Speed", finalSpeed / MAX_SPEED);
     }
-    
+
     protected IEnumerator Perception_CO()
     {
         bool firstTimeRotFixed = false;
@@ -168,7 +181,7 @@ abstract public class ACreeps : MonoBehaviour
                 float nearHeroDistance = float.MaxValue;
                 int minHeroIndex = 0;
                 Vector3 nearestHeroPos = this.transform.position;
-                
+
                 //경로 중 제일 짧은 것을 선출.
                 for (int i = 0; i < cols.Length; i++)
                 {
@@ -266,9 +279,9 @@ abstract public class ACreeps : MonoBehaviour
         float ranZ = 1.0f;
         Vector3 randomTarget = Vector3.zero;
 
-        while(true)
+        while (true)
         {
-            if(!isChasing)
+            if (!isChasing)
             {
                 ranSec = Random.Range(3.5f, 7.0f);
 
@@ -280,7 +293,7 @@ abstract public class ACreeps : MonoBehaviour
                 NavMeshHit hit;
                 Vector3 tempTarget = transform.position + randomTarget;
 
-                if (NavMesh.SamplePosition(tempTarget, out hit, 5,NavMesh.AllAreas))targetPos = hit.position;
+                if (NavMesh.SamplePosition(tempTarget, out hit, 5, NavMesh.AllAreas)) targetPos = hit.position;
                 else targetPos = transform.position;
             }
 
@@ -340,36 +353,81 @@ abstract public class ACreeps : MonoBehaviour
         this.transform.LookAt(WhoAttack.transform);
     }
 
+    private void AdjustCC(bool bCheck, CROWD_CONTROL_TYPE type)
+    {
+        if ((cc_state & CROWD_CONTROL_TYPE.SLOW) == CROWD_CONTROL_TYPE.SLOW)
+        {
+            creep_anim.SetBool("cc_Slow", bCheck);
+            speedFactor = bCheck ? 0.5f : 1.0f;
+            creep_anim.SetFloat("SpeedFactor", speedFactor);
+        }
+
+        if ((cc_state & CROWD_CONTROL_TYPE.ROOT) == CROWD_CONTROL_TYPE.ROOT)
+        {
+            creep_anim.SetBool("cc_Root", bCheck);
+            creep_anim.SetBool("isMovable", !bCheck);
+        }
+
+        if ((cc_state & CROWD_CONTROL_TYPE.STUN) == CROWD_CONTROL_TYPE.STUN)
+        {
+            creep_anim.SetBool("cc_Stun", bCheck);
+            creep_anim.SetBool("isMovable", !bCheck);
+
+            if(bCheck)
+            {
+                creep_anim.PlayInFixedTime("Get_hit", 0, 0.1f);
+                creep_anim.StopPlayback();
+            }
+
+        }
+    }
+
     protected IEnumerator AdjustCrowdControl_CO(CROWD_CONTROL_TYPE type, float adjustTime)
     {
-        cc_state |= type;
+        float timer = 0.0f;
+        int type_id = 0; 
 
-        switch (type)
+        switch(type)
         {
-            case CROWD_CONTROL_TYPE.NONE:
-                break;
             case CROWD_CONTROL_TYPE.SLOW:
-                speedFactor = 0.5f;
+                type_id = 0;
+                break;
+            case CROWD_CONTROL_TYPE.ROOT:
+                type_id = 1;
                 break;
             case CROWD_CONTROL_TYPE.STUN:
-                isFatalCC = true;
+                type_id = 2;
+                break;
+            default:
                 break;
         }
 
-        yield return new WaitForSeconds(adjustTime);
-        cc_state &= (~type);
 
-        switch (type)
+        if ((cc_state & type) == type)
+            cc_CrsCount[type_id]++;
+        else
+            cc_CrsCount[type_id] = 0;
+
+        while (true)
         {
-            case CROWD_CONTROL_TYPE.NONE:
+            timer += Time.deltaTime;
+            if (timer > adjustTime)
                 break;
-            case CROWD_CONTROL_TYPE.SLOW:
-                speedFactor = 1.0f;
-                break;
-            case CROWD_CONTROL_TYPE.STUN:
-                isFatalCC = false;
-                break;
+
+            cc_state |= type;
+
+            AdjustCC(true,type);
+
+            yield return null;
         }
+
+        if (cc_CrsCount[type_id] == 0)
+        {
+            AdjustCC(false,type);
+            cc_state &= (~type);
+        }
+        else
+            cc_CrsCount[type_id]--;
 
         yield break;
     }
@@ -378,7 +436,6 @@ abstract public class ACreeps : MonoBehaviour
     {
         creep_anim.SetBool("isDead", true);
         isDead = true;
-        print("creep Dead : " + isDead);
 
         yield return new WaitForSeconds(2.0f);
         this.gameObject.SetActive(false);
